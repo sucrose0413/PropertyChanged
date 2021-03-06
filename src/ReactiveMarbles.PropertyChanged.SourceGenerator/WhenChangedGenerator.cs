@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace ReactiveMarbles.PropertyChanged.SourceGenerator
 {
     [Generator]
-    internal sealed class WhenChangedGenerator : ISourceGenerator
+    internal sealed class WhenChangedGenerator
     {
         internal static readonly DiagnosticDescriptor ExpressionMustBeInline = new DiagnosticDescriptor(
             id: "RXM001",
@@ -43,23 +43,9 @@ namespace ReactiveMarbles.PropertyChanged.SourceGenerator
 
         private const string ExtensionClassFullName = "NotifyPropertyChangedExtensions";
 
-        public void Initialize(GeneratorInitializationContext context)
+
+        public static void GenerateWhenChanged(GeneratorExecutionContext context, Compilation compilation, SyntaxReceiver syntaxReceiver)
         {
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-        }
-
-        public void Execute(GeneratorExecutionContext context)
-        {
-            CSharpParseOptions options = (context.Compilation as CSharpCompilation).SyntaxTrees[0].Options as CSharpParseOptions;
-            var stubSource = StringBuilderSourceCreatorHelper.GetWhenChangedStubClass();
-            Compilation compilation = context.Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(SourceText.From(stubSource, Encoding.UTF8), options));
-            context.AddSource("WhenChanged.Stubs.g.cs", SourceText.From(stubSource, Encoding.UTF8));
-
-            if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver)
-            {
-                return;
-            }
-
             WhenChangedInvocationInfo whenChangedInvocationInfo = ExtractWhenChangedInvocationInfo(context, compilation, syntaxReceiver);
 
             if (!whenChangedInvocationInfo.AllExpressionArgumentsAreValid)
