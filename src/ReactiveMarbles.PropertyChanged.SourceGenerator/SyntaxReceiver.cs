@@ -36,7 +36,7 @@ namespace ReactiveMarbles.PropertyChanged
 
                 if (string.Equals(methodName, "OneWayBind"))
                 {
-                    OneWayBindMethods(invocationExpression);
+                    OneWayBindMethods.Add(invocationExpression);
                 }
             }
         }
